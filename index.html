@@ -33,7 +33,6 @@
                         linear-gradient(135deg, #2563eb, #7c3aed) border-box;
         }
 
-        /* Panic & Lock Mode Styling */
         body.panic-mode {
             background: #450a0a !important;
             overflow: hidden;
@@ -67,7 +66,6 @@
             color: #1e293b;
         }
 
-        /* Animations */
         @keyframes pulse-red {
             0% { transform: scale(1); box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.7); }
             70% { transform: scale(1.05); box-shadow: 0 0 0 15px rgba(239, 68, 68, 0); }
@@ -75,9 +73,14 @@
         }
         .alarm-active { animation: pulse-red 1s infinite; }
 
-        /* Custom Scrollbar */
         ::-webkit-scrollbar { width: 6px; }
         ::-webkit-scrollbar-thumb { background: #3b82f6; border-radius: 10px; }
+
+        .form-grid {
+            display: grid;
+            grid-template-cols: 1fr 1fr;
+            gap: 1rem;
+        }
     </style>
 </head>
 <body oncontextmenu="return false" class="select-none locked">
@@ -98,7 +101,7 @@
         </div>
     </div>
 
-    <!-- Panic Overlay (Security) -->
+    <!-- Panic Overlay -->
     <div id="panicOverlay" class="security-overlay">
         <div class="text-8xl mb-6">⚠️</div>
         <h1 class="text-5xl font-black mb-4 tracking-tighter uppercase">Akses Dilarang!</h1>
@@ -120,7 +123,6 @@
         <!-- Dashboard Top Section -->
         <header class="max-w-7xl mx-auto mb-12">
             <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
-                <!-- Branding -->
                 <div class="lg:col-span-4 glass-panel rounded-[2.5rem] p-8 flex flex-col justify-center">
                     <div class="flex items-center gap-3 mb-2">
                         <div class="w-3 h-3 bg-blue-600 rounded-full"></div>
@@ -131,7 +133,6 @@
                     </h1>
                 </div>
 
-                <!-- Clock & Status -->
                 <div class="lg:col-span-8 glass-panel rounded-[2.5rem] p-8 flex flex-col md:flex-row items-center justify-between gap-8 gradient-border">
                     <div class="text-center md:text-left">
                         <div id="realTimeClock" class="digital-clock text-6xl font-bold text-slate-800 leading-none">00:00:00</div>
@@ -140,7 +141,7 @@
                     <div class="h-12 w-px bg-slate-200 hidden md:block"></div>
                     <div class="flex flex-col items-center md:items-end">
                         <div id="statusBadge" class="px-4 py-2 rounded-full text-xs font-black uppercase tracking-wider mb-2"></div>
-                        <div id="countdownTimer" class="text-sm font-semibold text-slate-600">Sisa waktu: --h --m</div>
+                        <div id="countdownTimer" class="text-sm font-semibold text-slate-600">Sisa waktu: --j --m</div>
                     </div>
                 </div>
             </div>
@@ -148,39 +149,79 @@
 
         <main class="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-12 gap-8">
             <!-- Form Section -->
-            <div class="lg:col-span-4">
-                <div class="glass-panel p-8 rounded-[2.5rem] shadow-xl">
+            <div class="lg:col-span-5">
+                <div class="glass-panel p-8 rounded-[2.5rem] shadow-xl overflow-y-auto max-h-[85vh]">
                     <h2 class="text-xl font-extrabold text-slate-800 mb-8 flex items-center gap-3">
                         <span class="p-2 bg-slate-100 rounded-xl text-blue-600">📥</span>
-                        Input Transaksi
+                        Input Transaksi Lengkap
                     </h2>
                     
                     <form id="accountForm" class="space-y-6">
-                        <div class="group">
-                            <label class="block text-xs font-black text-slate-400 uppercase tracking-widest mb-2 ml-1">Tipe Aksi</label>
-                            <select id="tipe" class="w-full bg-slate-50 border-2 border-slate-100 rounded-2xl p-4 font-bold text-slate-700 focus:border-blue-500 focus:bg-white transition-all outline-none appearance-none">
-                                <option value="Jual">🛒 Jual Akun</option>
-                                <option value="Lepas">💸 Lepas Akun</option>
-                            </select>
+                        <div class="form-grid">
+                            <div>
+                                <label class="block text-[10px] font-black text-slate-400 uppercase tracking-widest mb-2 ml-1">Tipe Aksi</label>
+                                <select id="tipe" class="w-full bg-slate-50 border-2 border-slate-100 rounded-2xl p-4 font-bold text-slate-700 outline-none focus:border-blue-500">
+                                    <option value="Jual">🛒 Jual Akun</option>
+                                    <option value="Lepas">💸 Lepas Akun</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label class="block text-[10px] font-black text-slate-400 uppercase tracking-widest mb-2 ml-1">Risiko HB</label>
+                                <select id="risiko" class="w-full bg-slate-50 border-2 border-slate-100 rounded-2xl p-4 font-bold text-slate-700 outline-none focus:border-blue-500">
+                                    <option value="Rendah">🟢 Rendah</option>
+                                    <option value="Sedang">🟡 Sedang</option>
+                                    <option value="Tinggi">🔴 Tinggi</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="form-grid">
+                            <div>
+                                <label class="block text-[10px] font-black text-slate-400 uppercase tracking-widest mb-2 ml-1">Status Email</label>
+                                <select id="statusEmail" class="w-full bg-slate-50 border-2 border-slate-100 rounded-2xl p-4 font-bold text-slate-700 outline-none focus:border-blue-500">
+                                    <option value="Email Polos">⚪ Email Polos</option>
+                                    <option value="Email Berisi">📧 Email Berisi</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label class="block text-[10px] font-black text-slate-400 uppercase tracking-widest mb-2 ml-1">Status A2F</label>
+                                <select id="statusA2f" class="w-full bg-slate-50 border-2 border-slate-100 rounded-2xl p-4 font-bold text-slate-700 outline-none focus:border-blue-500">
+                                    <option value="Mati">🔓 A2F Mati</option>
+                                    <option value="Aktif">🛡️ A2F Aktif</option>
+                                </select>
+                            </div>
                         </div>
 
                         <div>
-                            <label class="block text-xs font-black text-slate-400 uppercase tracking-widest mb-2 ml-1">Roblox Username</label>
-                            <input type="text" id="robloxId" required placeholder="Contoh: RobuxMaster" class="w-full bg-slate-50 border-2 border-slate-100 rounded-2xl p-4 font-semibold focus:border-blue-500 focus:bg-white transition-all outline-none">
+                            <label class="block text-[10px] font-black text-slate-400 uppercase tracking-widest mb-2 ml-1">Roblox Username</label>
+                            <input type="text" id="robloxId" required placeholder="Username" class="w-full bg-slate-50 border-2 border-slate-100 rounded-2xl p-4 font-semibold outline-none focus:border-blue-500">
+                        </div>
+
+                        <div class="form-grid">
+                            <div>
+                                <label class="block text-[10px] font-black text-slate-400 uppercase tracking-widest mb-2 ml-1">Email / Kontak</label>
+                                <input type="email" id="email" required placeholder="Kontak" class="w-full bg-slate-50 border-2 border-slate-100 rounded-2xl p-4 font-semibold outline-none focus:border-blue-500">
+                            </div>
+                            <div>
+                                <label class="block text-[10px] font-black text-slate-400 uppercase tracking-widest mb-2 ml-1">Password</label>
+                                <input type="password" id="password" required placeholder="••••••••" class="w-full bg-slate-50 border-2 border-slate-100 rounded-2xl p-4 font-semibold outline-none focus:border-blue-500">
+                            </div>
+                        </div>
+
+                        <div class="p-6 bg-blue-50/50 rounded-[2rem] border border-blue-100 space-y-4">
+                            <h3 class="text-xs font-black text-blue-600 uppercase tracking-widest">Detail Game & Map</h3>
+                            <div>
+                                <label class="block text-[10px] font-black text-slate-400 uppercase tracking-widest mb-2 ml-1">Nama Map (Misal: Fisch, Blox Fruit)</label>
+                                <input type="text" id="namaMap" placeholder="Ketik nama map..." class="w-full bg-white border-2 border-slate-100 rounded-2xl p-4 font-semibold outline-none focus:border-blue-500">
+                            </div>
+                            <div>
+                                <label class="block text-[10px] font-black text-slate-400 uppercase tracking-widest mb-2 ml-1">Item Legend / Detail Map</label>
+                                <textarea id="detailItem" placeholder="Sebutkan item legendary atau spesifikasi akun di map tersebut..." class="w-full bg-white border-2 border-slate-100 rounded-2xl p-4 font-semibold outline-none focus:border-blue-500 h-24 resize-none"></textarea>
+                            </div>
                         </div>
 
                         <div>
-                            <label class="block text-xs font-black text-slate-400 uppercase tracking-widest mb-2 ml-1">Email / Kontak</label>
-                            <input type="email" id="email" required placeholder="admin@roblox.com" class="w-full bg-slate-50 border-2 border-slate-100 rounded-2xl p-4 font-semibold focus:border-blue-500 focus:bg-white transition-all outline-none">
-                        </div>
-
-                        <div>
-                            <label class="block text-xs font-black text-slate-400 uppercase tracking-widest mb-2 ml-1">Password Rahasia</label>
-                            <input type="password" id="password" required placeholder="••••••••" class="w-full bg-slate-50 border-2 border-slate-100 rounded-2xl p-4 font-semibold focus:border-blue-500 focus:bg-white transition-all outline-none">
-                        </div>
-
-                        <div>
-                            <label class="block text-xs font-black text-slate-400 uppercase tracking-widest mb-2 ml-1">Bukti / Foto Identitas (Bisa Banyak)</label>
+                            <label class="block text-[10px] font-black text-slate-400 uppercase tracking-widest mb-2 ml-1">Bukti / Foto (Bisa Banyak)</label>
                             <label class="flex flex-col items-center w-full p-4 bg-white text-blue-500 rounded-2xl border-2 border-dashed border-blue-100 cursor-pointer hover:bg-blue-50 transition">
                                 <span id="fileLabel" class="text-sm font-bold">Pilih Satu atau Beberapa Foto</span>
                                 <input type='file' id="foto" accept="image/*" class="hidden" multiple onchange="updateFileLabel()" />
@@ -188,20 +229,20 @@
                         </div>
 
                         <button type="submit" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-black py-5 rounded-2xl shadow-lg shadow-blue-200 transition-all uppercase tracking-widest text-sm">
-                            Simpan & Amankan Data
+                            Simpan Data Database
                         </button>
                     </form>
                 </div>
             </div>
 
             <!-- List Section -->
-            <div class="lg:col-span-8">
+            <div class="lg:col-span-7">
                 <div class="glass-panel p-8 rounded-[2.5rem] shadow-xl min-h-[600px]">
                     <div class="flex items-center justify-between mb-8">
-                        <h2 class="text-2xl font-black text-slate-800 tracking-tight">Data Tersimpan</h2>
+                        <h2 class="text-2xl font-black text-slate-800 tracking-tight">Database Transaksi</h2>
                         <div class="flex gap-4">
-                            <button onclick="logout()" class="text-xs font-black text-blue-600 uppercase tracking-widest hover:underline transition">Logout Kantor</button>
-                            <button onclick="hapusSemua()" class="text-xs font-black text-red-400 uppercase tracking-widest hover:text-red-600 transition">Hapus Semua</button>
+                            <button onclick="logout()" class="text-xs font-black text-blue-600 uppercase tracking-widest hover:underline transition">Logout</button>
+                            <button onclick="hapusSemua()" class="text-xs font-black text-red-400 uppercase tracking-widest hover:text-red-600 transition">Reset</button>
                         </div>
                     </div>
                     
@@ -213,32 +254,28 @@
         </main>
     </div>
 
-    <!-- Alarm Audio (Hidden) -->
+    <!-- Alarm Audio -->
     <audio id="alarmAudio" loop>
         <source src="https://assets.mixkit.co/active_storage/sfx/2869/2869-preview.mp3" type="audio/mpeg">
     </audio>
 
     <script>
         const { jsPDF } = window.jspdf;
-        let dbData = JSON.parse(localStorage.getItem('roblox_admin_secure_data')) || [];
+        let dbData = JSON.parse(localStorage.getItem('roblox_admin_secure_data_v4')) || [];
         let alarmTriggered = false;
         
-        // Security Stats
         const OFFICE_PASS = "kantoradmin";
         let attemptCount = 0;
-        let baseCooldown = 30; // 30 detik awal
+        let baseCooldown = 30;
         let currentCooldownMultiplier = 1;
         let isCooldownActive = false;
 
-        // --- SECURITY: Login & Anti-Bruteforce ---
         function checkLogin() {
             if (isCooldownActive) return;
-
             const input = document.getElementById('officePassword');
             const errorDiv = document.getElementById('loginError');
 
             if (input.value === OFFICE_PASS) {
-                // Success
                 document.body.classList.remove('locked');
                 document.getElementById('loginOverlay').style.opacity = '0';
                 setTimeout(() => {
@@ -247,17 +284,12 @@
                 }, 500);
                 attemptCount = 0;
                 input.value = "";
-                errorDiv.classList.add('hidden');
             } else {
-                // Fail
                 attemptCount++;
                 input.value = "";
-                errorDiv.innerText = `Password Salah! Percobaan: ${attemptCount}/3`;
+                errorDiv.innerText = `Password Salah! (${attemptCount}/3)`;
                 errorDiv.classList.remove('hidden');
-
-                if (attemptCount >= 3) {
-                    activatePanicMode();
-                }
+                if (attemptCount >= 3) activatePanicMode();
             }
         }
 
@@ -265,94 +297,43 @@
             isCooldownActive = true;
             document.body.classList.add('panic-mode');
             document.getElementById('panicOverlay').style.display = 'flex';
-            
             let secondsLeft = baseCooldown * currentCooldownMultiplier;
-            const cooldownDisplay = document.getElementById('panicCooldown');
-            
             const timer = setInterval(() => {
                 secondsLeft--;
-                cooldownDisplay.innerText = `Harap tunggu: ${secondsLeft} detik`;
-                
+                document.getElementById('panicCooldown').innerText = `Harap tunggu: ${secondsLeft} detik`;
                 if (secondsLeft <= 0) {
                     clearInterval(timer);
-                    resetPanicMode();
+                    isCooldownActive = false;
+                    attemptCount = 0;
+                    currentCooldownMultiplier *= 2;
+                    document.body.classList.remove('panic-mode');
+                    document.getElementById('panicOverlay').style.display = 'none';
                 }
             }, 1000);
         }
 
-        function resetPanicMode() {
-            isCooldownActive = false;
-            attemptCount = 0;
-            currentCooldownMultiplier *= 2; // Makin lama jika gagal lagi
-            document.body.classList.remove('panic-mode');
-            document.getElementById('panicOverlay').style.display = 'none';
-            document.getElementById('loginError').innerText = "Silahkan coba lagi (Hati-hati)";
-        }
+        function logout() { location.reload(); }
 
-        function logout() {
-            location.reload();
-        }
-
-        // Anti Inspect Element
-        document.addEventListener('keydown', function(e) {
-            if (e.keyCode == 123 || 
-                (e.ctrlKey && e.shiftKey && (e.keyCode == 73 || e.keyCode == 74)) || 
-                (e.ctrlKey && e.keyCode == 85)) {
-                activatePanicMode();
-                e.preventDefault();
-            }
-        });
-
-        // --- UI HELPERS ---
         function updateFileLabel() {
             const input = document.getElementById('foto');
             const label = document.getElementById('fileLabel');
-            if (input.files.length > 0) {
-                label.innerText = `${input.files.length} file dipilih`;
-            } else {
-                label.innerText = "Pilih Satu atau Beberapa Foto";
-            }
+            label.innerText = input.files.length > 0 ? `${input.files.length} file dipilih` : "Pilih Satu atau Beberapa Foto";
         }
 
-        // --- CLOCK & ALARM LOGIC ---
         function updateClock() {
             const now = new Date();
-            const h = String(now.getHours()).padStart(2, '0');
-            const m = String(now.getMinutes()).padStart(2, '0');
-            const s = String(now.getSeconds()).padStart(2, '0');
+            document.getElementById('realTimeClock').innerText = now.toTimeString().split(' ')[0];
+            document.getElementById('currentDate').innerText = now.toLocaleDateString('id-ID', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
             
-            document.getElementById('realTimeClock').innerText = `${h}:${m}:${s}`;
-            
-            const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
-            const dateEl = document.getElementById('currentDate');
-            if(dateEl) dateEl.innerText = now.toLocaleDateString('id-ID', options);
-
-            const currentHour = now.getHours();
+            const h = now.getHours();
             const badge = document.getElementById('statusBadge');
-            const countdown = document.getElementById('countdownTimer');
-
-            if (currentHour >= 8 && currentHour < 20) {
-                if(badge) {
-                    badge.innerText = "● Sedang Bertugas";
-                    badge.className = "px-4 py-2 rounded-full text-[10px] font-black uppercase tracking-wider mb-2 bg-green-100 text-green-600";
-                }
-                
-                const end = new Date();
-                end.setHours(20, 0, 0);
-                const diff = end - now;
-                const hoursLeft = Math.floor(diff / (1000 * 60 * 60));
-                const minsLeft = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
-                if(countdown) countdown.innerText = `Shift berakhir dalam: ${hoursLeft}j ${minsLeft}m`;
+            if (h >= 8 && h < 20) {
+                badge.innerText = "● Sedang Bertugas";
+                badge.className = "px-4 py-2 rounded-full text-[10px] font-black uppercase tracking-wider mb-2 bg-green-100 text-green-600";
             } else {
-                if(badge) {
-                    badge.innerText = "○ Selesai Bertugas";
-                    badge.className = "px-4 py-2 rounded-full text-[10px] font-black uppercase tracking-wider mb-2 bg-slate-200 text-slate-500";
-                }
-                if(countdown) countdown.innerText = "Waktu istirahat";
-                
-                if (currentHour === 20 && !alarmTriggered) {
-                    triggerAlarm();
-                }
+                badge.innerText = "○ Selesai Bertugas";
+                badge.className = "px-4 py-2 rounded-full text-[10px] font-black uppercase tracking-wider mb-2 bg-slate-200 text-slate-500";
+                if (h === 20 && !alarmTriggered) triggerAlarm();
             }
         }
 
@@ -367,68 +348,70 @@
             document.getElementById('alarmAudio').pause();
         }
 
-        // --- DATA MANAGEMENT ---
         document.getElementById('accountForm').addEventListener('submit', async (e) => {
             e.preventDefault();
-            
             const fotoInput = document.getElementById('foto');
             let fotoArray = [];
-            
-            if (fotoInput.files.length > 0) {
-                for (let i = 0; i < fotoInput.files.length; i++) {
-                    const base64 = await toBase64(fotoInput.files[i]);
-                    fotoArray.push(base64);
-                }
+            for (let i = 0; i < fotoInput.files.length; i++) {
+                fotoArray.push(await toBase64(fotoInput.files[i]));
             }
 
             const item = {
                 id: Date.now(),
                 waktu: new Date().toLocaleString('id-ID'),
                 tipe: document.getElementById('tipe').value,
+                risiko: document.getElementById('risiko').value,
+                statusEmail: document.getElementById('statusEmail').value,
+                statusA2f: document.getElementById('statusA2f').value,
                 robloxId: document.getElementById('robloxId').value,
                 email: document.getElementById('email').value,
                 password: document.getElementById('password').value,
-                fotos: fotoArray // Array of base64 images
+                namaMap: document.getElementById('namaMap').value || "Tidak Disebutkan",
+                detailItem: document.getElementById('detailItem').value || "Tidak ada detail item",
+                fotos: fotoArray
             };
 
             dbData.unshift(item);
-            localStorage.setItem('roblox_admin_secure_data', JSON.stringify(dbData));
+            localStorage.setItem('roblox_admin_secure_data_v4', JSON.stringify(dbData));
             renderList();
             e.target.reset();
             updateFileLabel();
         });
 
-        const toBase64 = file => new Promise((resolve, reject) => {
+        const toBase64 = file => new Promise((resolve) => {
             const reader = new FileReader();
             reader.readAsDataURL(file);
             reader.onload = () => resolve(reader.result);
-            reader.onerror = error => reject(error);
         });
 
         function renderList() {
             const list = document.getElementById('listData');
             if (dbData.length === 0) {
-                list.innerHTML = `<div class="text-center py-20 text-slate-300 font-bold uppercase tracking-widest text-sm">Belum ada data transaksi</div>`;
+                list.innerHTML = `<div class="text-center py-20 text-slate-300 font-bold uppercase tracking-widest text-sm">Database Kosong</div>`;
                 return;
             }
 
             list.innerHTML = dbData.map(item => `
-                <div class="bg-white p-6 rounded-3xl border border-slate-100 flex flex-col md:flex-row justify-between items-center gap-4 hover:shadow-lg transition-all group">
-                    <div class="flex items-center gap-4 w-full md:w-auto">
+                <div class="bg-white p-6 rounded-3xl border border-slate-100 flex flex-col md:flex-row justify-between items-center gap-4 hover:shadow-lg transition-all">
+                    <div class="flex items-start gap-4 w-full md:w-auto">
                         <div class="w-14 h-14 rounded-2xl flex items-center justify-center text-2xl ${item.tipe === 'Jual' ? 'bg-orange-50 text-orange-600' : 'bg-blue-50 text-blue-600'}">
                             ${item.tipe === 'Jual' ? '🛒' : '💸'}
                         </div>
                         <div>
-                            <div class="flex items-center gap-2 mb-0.5">
+                            <div class="flex flex-wrap items-center gap-2 mb-1">
                                 <h3 class="font-black text-slate-800 tracking-tight">${item.robloxId}</h3>
-                                <span class="text-[9px] font-black uppercase px-2 py-0.5 rounded-full ${item.tipe === 'Jual' ? 'bg-orange-100 text-orange-600' : 'bg-blue-100 text-blue-600'}">${item.tipe}</span>
-                                ${item.fotos && item.fotos.length > 0 ? `<span class="text-[9px] bg-slate-100 text-slate-500 font-bold px-2 py-0.5 rounded-full">🖼️ ${item.fotos.length} Foto</span>` : ''}
+                                <span class="text-[8px] font-black uppercase px-2 py-0.5 rounded-full ${item.risiko === 'Tinggi' ? 'bg-red-100 text-red-600' : 'bg-green-100 text-green-600'}">HB: ${item.risiko}</span>
+                                <span class="text-[8px] font-black bg-blue-100 text-blue-600 px-2 py-0.5 rounded-full">${item.namaMap}</span>
                             </div>
-                            <p class="text-xs font-bold text-slate-400">${item.waktu} • ${item.email}</p>
+                            <p class="text-[10px] font-bold text-slate-400 mb-1">${item.waktu} • ${item.email}</p>
+                            <div class="flex gap-2">
+                                <span class="text-[8px] font-bold text-slate-500 bg-slate-100 px-2 py-0.5 rounded-md">${item.statusEmail}</span>
+                                <span class="text-[8px] font-bold text-slate-500 bg-slate-100 px-2 py-0.5 rounded-md">A2F: ${item.statusA2f}</span>
+                            </div>
                         </div>
                     </div>
                     <div class="flex items-center gap-3 w-full md:w-auto">
-                        <button onclick="downloadPDF(${item.id})" class="flex-1 md:flex-none px-6 py-3 bg-slate-900 text-white rounded-2xl text-xs font-black uppercase tracking-widest hover:bg-blue-600 transition shadow-md">Download PDF</button>
+                        <button onclick="downloadPDF(${item.id})" class="flex-1 md:flex-none px-6 py-3 bg-slate-900 text-white rounded-2xl text-[10px] font-black uppercase tracking-widest hover:bg-blue-600 transition">PDF REPORT</button>
                         <button onclick="hapusData(${item.id})" class="p-3 text-slate-300 hover:text-red-500 transition">
                             <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" /></svg>
                         </button>
@@ -440,89 +423,95 @@
         function downloadPDF(id) {
             const data = dbData.find(d => d.id === id);
             if (!data) return;
-
             const doc = new jsPDF();
             
-            // Header
+            // Header Color
             doc.setFillColor(37, 99, 235);
-            doc.rect(0, 0, 210, 40, 'F');
+            doc.rect(0, 0, 210, 45, 'F');
             doc.setTextColor(255, 255, 255);
-            doc.setFontSize(22);
+            doc.setFontSize(24);
             doc.setFont("helvetica", "bold");
-            doc.text("ROBLOX DATA REPORT", 20, 25);
+            doc.text("ROBLOX ACCOUNT SECURITY REPORT", 20, 28);
+            doc.setFontSize(10);
+            doc.text(`ID TRANSKASI: ${data.id} | ${data.waktu}`, 20, 38);
             
-            // Info
+            // Basic Info
             doc.setTextColor(50, 50, 50);
-            doc.setFontSize(12);
-            doc.text(`Tipe: ${data.tipe} Akun`, 20, 55);
-            doc.text(`Waktu: ${data.waktu}`, 20, 62);
+            doc.setFontSize(14);
+            doc.text("INFORMASI UTAMA", 20, 60);
+            doc.line(20, 62, 190, 62);
             
-            doc.setDrawColor(200);
-            doc.line(20, 68, 190, 68);
-
-            doc.text("KREDENSI AKUN:", 20, 80);
+            doc.setFontSize(11);
             doc.setFont("helvetica", "normal");
-            doc.text(`Username: ${data.robloxId}`, 30, 90);
-            doc.text(`Email: ${data.email}`, 30, 98);
-            doc.text(`Password: ${data.password}`, 30, 106);
+            doc.text(`Tipe Transaksi: ${data.tipe}`, 20, 72);
+            doc.text(`Risiko Hackback (HB): ${data.risiko}`, 20, 80);
+            doc.text(`Username: ${data.robloxId}`, 20, 88);
+            doc.text(`Password: ${data.password}`, 20, 96);
+            doc.text(`Email Kontak: ${data.email}`, 20, 104);
 
-            // Lampiran Foto (Multiple)
+            // Security Status
+            doc.setFont("helvetica", "bold");
+            doc.text("STATUS KEAMANAN AKUN", 20, 118);
+            doc.setFont("helvetica", "normal");
+            doc.text(`1. Kondisi Email: ${data.statusEmail}`, 25, 126);
+            doc.text(`2. Keamanan A2F: ${data.statusA2f}`, 25, 134);
+
+            // Map Details
+            doc.setFillColor(248, 250, 252);
+            doc.rect(20, 145, 170, 45, 'F');
+            doc.setFont("helvetica", "bold");
+            doc.text(`MAP: ${data.namaMap.toUpperCase()}`, 25, 155);
+            doc.setFont("helvetica", "normal");
+            doc.setFontSize(10);
+            const splitDetail = doc.splitTextToSize(`Item Legend/Detail: ${data.detailItem}`, 160);
+            doc.text(splitDetail, 25, 163);
+
+            // Images
             if (data.fotos && data.fotos.length > 0) {
-                let currentY = 125;
+                doc.addPage();
+                doc.setFontSize(14);
                 doc.setFont("helvetica", "bold");
-                doc.text("LAMPIRAN FOTO:", 20, currentY);
-                currentY += 10;
-
-                data.fotos.forEach((foto, index) => {
-                    // Check if we need a new page
-                    if (currentY + 80 > 280) {
-                        doc.addPage();
-                        currentY = 20;
-                    }
-
+                doc.text("LAMPIRAN BUKTI GAMBAR", 20, 20);
+                
+                let currentY = 30;
+                data.fotos.forEach((foto, idx) => {
+                    if (currentY + 80 > 280) { doc.addPage(); currentY = 20; }
                     try {
-                        doc.addImage(foto, 'JPEG', 20, currentY, 100, 75);
+                        doc.addImage(foto, 'JPEG', 20, currentY, 110, 80);
                         doc.setFontSize(8);
-                        doc.setFont("helvetica", "italic");
-                        doc.text(`Foto ${index + 1}`, 125, currentY + 40);
+                        doc.text(`Gambar ${idx + 1}`, 135, currentY + 40);
                         currentY += 85;
-                    } catch (e) {
-                        doc.text(`[Gagal memuat foto ${index + 1}]`, 20, currentY);
-                        currentY += 10;
-                    }
+                    } catch (e) { currentY += 10; }
                 });
             }
 
             // Footer
-            const pageCount = doc.internal.getNumberOfPages();
-            for(let i = 1; i <= pageCount; i++) {
+            const pages = doc.internal.getNumberOfPages();
+            for(let i=1; i<=pages; i++) {
                 doc.setPage(i);
-                doc.setFontSize(9);
+                doc.setFontSize(8);
                 doc.setTextColor(150);
-                doc.text("System Secured by Admin Dashboard Pro - Private Document", 105, 285, null, null, "center");
-                doc.text(`Halaman ${i} dari ${pageCount}`, 190, 285, null, null, "right");
+                doc.text("Sistem Keamanan Kantor Admin - Dokumen Rahasia", 105, 290, null, null, "center");
             }
-
-            doc.save(`ROBLOX_${data.robloxId}.pdf`);
+            doc.save(`ROBLOX_REPORT_${data.robloxId}.pdf`);
         }
 
         function hapusData(id) {
             if (confirm("Hapus data ini?")) {
                 dbData = dbData.filter(d => d.id !== id);
-                localStorage.setItem('roblox_admin_secure_data', JSON.stringify(dbData));
+                localStorage.setItem('roblox_admin_secure_data_v4', JSON.stringify(dbData));
                 renderList();
             }
         }
 
         function hapusSemua() {
-            if (confirm("Hapus semua riwayat transaksi?")) {
+            if (confirm("Reset seluruh database?")) {
                 dbData = [];
-                localStorage.setItem('roblox_admin_secure_data', JSON.stringify(dbData));
+                localStorage.setItem('roblox_admin_secure_data_v4', JSON.stringify(dbData));
                 renderList();
             }
         }
 
-        // Run
         setInterval(updateClock, 1000);
         updateClock();
         renderList();
