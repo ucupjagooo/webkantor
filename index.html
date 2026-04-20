@@ -78,8 +78,39 @@
 
         .form-grid {
             display: grid;
-            grid-template-cols: 1fr 1fr;
+            grid-template-columns: 1fr 1fr;
             gap: 1rem;
+        }
+
+        /* Photo Queue Styles */
+        .photo-thumbnail {
+            position: relative;
+            width: 80px;
+            height: 80px;
+            border-radius: 12px;
+            overflow: hidden;
+            border: 2px solid #e2e8f0;
+        }
+        .photo-thumbnail img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+        .remove-photo {
+            position: absolute;
+            top: 2px;
+            right: 2px;
+            background: rgba(239, 68, 68, 0.9);
+            color: white;
+            border-radius: 50%;
+            width: 20px;
+            height: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 12px;
+            cursor: pointer;
+            border: none;
         }
     </style>
 </head>
@@ -220,16 +251,22 @@
                             </div>
                         </div>
 
+                        <!-- Foto Queue Section -->
                         <div>
-                            <label class="block text-[10px] font-black text-slate-400 uppercase tracking-widest mb-2 ml-1">Bukti / Foto (Bisa Banyak)</label>
+                            <label class="block text-[10px] font-black text-slate-400 uppercase tracking-widest mb-2 ml-1">Lampiran Foto (Antrean)</label>
                             <label class="flex flex-col items-center w-full p-4 bg-white text-blue-500 rounded-2xl border-2 border-dashed border-blue-100 cursor-pointer hover:bg-blue-50 transition">
-                                <span id="fileLabel" class="text-sm font-bold">Pilih Satu atau Beberapa Foto</span>
-                                <input type='file' id="foto" accept="image/*" class="hidden" multiple onchange="updateFileLabel()" />
+                                <span class="text-sm font-bold">Tambah Foto ke Antrean</span>
+                                <input type='file' id="fotoInput" accept="image/*" class="hidden" multiple onchange="handlePhotoSelect(event)" />
                             </label>
+                            
+                            <!-- Preview Container -->
+                            <div id="photoQueuePreview" class="flex flex-wrap gap-3 mt-4 p-2 bg-slate-50 rounded-2xl min-h-[50px]">
+                                <!-- Thumbnails will appear here -->
+                            </div>
                         </div>
 
                         <button type="submit" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-black py-5 rounded-2xl shadow-lg shadow-blue-200 transition-all uppercase tracking-widest text-sm">
-                            Simpan Data Database
+                            Simpan ke Database
                         </button>
                     </form>
                 </div>
@@ -260,6 +297,18 @@
     </audio>
 
     <script>
+        // ANTI-INSPECT PROTECTION
+        document.addEventListener('keydown', function(e) {
+            // Disable F12
+            if(e.keyCode == 123) { e.preventDefault(); return false; }
+            // Disable Ctrl+Shift+I
+            if(e.ctrlKey && e.shiftKey && e.keyCode == 73) { e.preventDefault(); return false; }
+            // Disable Ctrl+Shift+J
+            if(e.ctrlKey && e.shiftKey && e.keyCode == 74) { e.preventDefault(); return false; }
+            // Disable Ctrl+U
+            if(e.ctrlKey && e.keyCode == 85) { e.preventDefault(); return false; }
+        });
+
         const { jsPDF } = window.jspdf;
         let dbData = JSON.parse(localStorage.getItem('roblox_admin_secure_data_v4')) || [];
         let alarmTriggered = false;
@@ -269,6 +318,9 @@
         let baseCooldown = 30;
         let currentCooldownMultiplier = 1;
         let isCooldownActive = false;
+
+        // Global Photo Queue
+        let currentPhotoQueue = [];
 
         function checkLogin() {
             if (isCooldownActive) return;
@@ -314,11 +366,40 @@
 
         function logout() { location.reload(); }
 
-        function updateFileLabel() {
-            const input = document.getElementById('foto');
-            const label = document.getElementById('fileLabel');
-            label.innerText = input.files.length > 0 ? `${input.files.length} file dipilih` : "Pilih Satu atau Beberapa Foto";
+        // --- NEW PHOTO QUEUE FUNCTIONS ---
+        async function handlePhotoSelect(event) {
+            const files = event.target.files;
+            for (let i = 0; i < files.length; i++) {
+                const base64 = await toBase64(files[i]);
+                currentPhotoQueue.push({
+                    id: Date.now() + Math.random(),
+                    data: base64
+                });
+            }
+            renderPhotoQueue();
+            event.target.value = ''; // Reset input to allow same file selection
         }
+
+        function removePhotoFromQueue(id) {
+            currentPhotoQueue = currentPhotoQueue.filter(photo => photo.id !== id);
+            renderPhotoQueue();
+        }
+
+        function renderPhotoQueue() {
+            const container = document.getElementById('photoQueuePreview');
+            if (currentPhotoQueue.length === 0) {
+                container.innerHTML = `<span class="text-[10px] text-slate-400 p-2 italic">Belum ada foto dalam antrean...</span>`;
+                return;
+            }
+
+            container.innerHTML = currentPhotoQueue.map(photo => `
+                <div class="photo-thumbnail">
+                    <img src="${photo.data}" alt="Preview">
+                    <button type="button" onclick="removePhotoFromQueue(${photo.id})" class="remove-photo">×</button>
+                </div>
+            `).join('');
+        }
+        // --- END PHOTO QUEUE ---
 
         function updateClock() {
             const now = new Date();
@@ -350,11 +431,9 @@
 
         document.getElementById('accountForm').addEventListener('submit', async (e) => {
             e.preventDefault();
-            const fotoInput = document.getElementById('foto');
-            let fotoArray = [];
-            for (let i = 0; i < fotoInput.files.length; i++) {
-                fotoArray.push(await toBase64(fotoInput.files[i]));
-            }
+
+            // Check if queue has photos
+            const finalPhotos = currentPhotoQueue.map(p => p.data);
 
             const item = {
                 id: Date.now(),
@@ -368,14 +447,18 @@
                 password: document.getElementById('password').value,
                 namaMap: document.getElementById('namaMap').value || "Tidak Disebutkan",
                 detailItem: document.getElementById('detailItem').value || "Tidak ada detail item",
-                fotos: fotoArray
+                fotos: finalPhotos // Save all photos from queue
             };
 
             dbData.unshift(item);
             localStorage.setItem('roblox_admin_secure_data_v4', JSON.stringify(dbData));
+            
+            // Reset Queue
+            currentPhotoQueue = [];
+            renderPhotoQueue();
+            
             renderList();
             e.target.reset();
-            updateFileLabel();
         });
 
         const toBase64 = file => new Promise((resolve) => {
@@ -402,6 +485,7 @@
                                 <h3 class="font-black text-slate-800 tracking-tight">${item.robloxId}</h3>
                                 <span class="text-[8px] font-black uppercase px-2 py-0.5 rounded-full ${item.risiko === 'Tinggi' ? 'bg-red-100 text-red-600' : 'bg-green-100 text-green-600'}">HB: ${item.risiko}</span>
                                 <span class="text-[8px] font-black bg-blue-100 text-blue-600 px-2 py-0.5 rounded-full">${item.namaMap}</span>
+                                <span class="text-[8px] font-black bg-slate-100 text-slate-500 px-2 py-0.5 rounded-full">${item.fotos.length} Foto</span>
                             </div>
                             <p class="text-[10px] font-bold text-slate-400 mb-1">${item.waktu} • ${item.email}</p>
                             <div class="flex gap-2">
@@ -515,6 +599,7 @@
         setInterval(updateClock, 1000);
         updateClock();
         renderList();
+        renderPhotoQueue();
     </script>
 </body>
 </html>
